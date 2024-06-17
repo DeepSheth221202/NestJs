@@ -1,0 +1,25 @@
+POST http://localhost:3000/auth/signup
+content-type: application/json
+
+{
+    "email":"deep4@gmail.com",
+    "password":"123456"
+}
+
+
+### 
+GET http://localhost:3000/auth/1
+
+###
+GET http://localhost:3000/auth?email=deep@gmail.com
+
+###
+DELETE http://localhost:3000/auth/5
+
+###
+PATCH http://localhost:3000/auth/3
+content-type: application/json
+
+{
+    "email":"deep3@gmail.com"
+}
