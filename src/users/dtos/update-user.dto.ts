@@ -9,3 +9,4 @@ export class UpdateUserDto{
     @IsOptional()
     password:string;
 }
+

@@ -28,6 +28,9 @@ export class UsersService {
     }
 
     findOne(id:number){
+        if(!id){
+            return null; //if we dont check for this condition then repo.findOne(null) will return the first element from table
+        }
         return this.userRepository.findOne({
             where:{id:id}
         });

@@ -8,20 +8,52 @@ import {
   Query,
   Delete,
   NotFoundException,
-  UseInterceptors,
-  ClassSerializerInterceptor
+  Session,
+  UseInterceptors
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
+import { UserDto } from 'src/users/dtos/user.dto';
+import {Serialize} from '../interceptors/serialize.interceptor';
+import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from './user.entity';
 
 @Controller('auth')
+@Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
-  constructor(private readonly usersservice: UsersService) {}
+  constructor(private readonly usersservice: UsersService, private readonly authService : AuthService) {}
 
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    this.usersservice.create(body.email, body.password);
+  async createUser(@Body() body: CreateUserDto , @Session() session : any) {
+    const user = await this.authService.signUp(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+  @Post('/signin')
+  async signin(@Body() body: CreateUserDto, @Session() session : any) {
+    const user = await this.authService.signIn(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+//   @Get('/whoami')
+//   whoAmI(@Session() session : any){
+//     return this.usersservice.findOne(session.userId);
+//   }
+
+  @Get('/whoami')
+  whoAmI(@CurrentUser() user : User){
+    return user;
+  }
+
+  @Post('/signout')
+  async signout(@Session() session : any) {
+    session.userId = null;
   }
 
   @Get()
@@ -29,7 +61,6 @@ export class UsersController {
     return this.usersservice.find(email);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/:id')
   async findUser(@Param('id') id: string) {
     const user = await this.usersservice.findOne(parseInt(id));

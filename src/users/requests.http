@@ -2,10 +2,24 @@ POST http://localhost:3000/auth/signup
 content-type: application/json
 
 {
-    "email":"deep4@gmail.com",
-    "password":"123456"
+    "email":"test@test.com",
+    "password":"12345"
 }
 
+###
+POST http://localhost:3000/auth/signin
+content-type: application/json
+
+{
+    "email":"test@test.com",
+    "password":"12345"
+}
+
+###
+GET http://localhost:3000/auth/whoami
+
+###
+POST http://localhost:3000/auth/signout
 
 ### 
 GET http://localhost:3000/auth/1
